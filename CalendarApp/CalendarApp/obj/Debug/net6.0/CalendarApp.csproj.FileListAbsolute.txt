@@ -1,0 +1,15 @@
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\obj\Debug\net6.0\CalendarApp.csproj.AssemblyReference.cache
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\obj\Debug\net6.0\CalendarApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\obj\Debug\net6.0\CalendarApp.AssemblyInfoInputs.cache
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\obj\Debug\net6.0\CalendarApp.AssemblyInfo.cs
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\obj\Debug\net6.0\CalendarApp.csproj.CoreCompileInputs.cache
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\bin\Debug\net6.0\CalendarApp.exe
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\bin\Debug\net6.0\CalendarApp.deps.json
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\bin\Debug\net6.0\CalendarApp.runtimeconfig.json
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\bin\Debug\net6.0\CalendarApp.dll
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\bin\Debug\net6.0\CalendarApp.pdb
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\obj\Debug\net6.0\CalendarApp.dll
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\obj\Debug\net6.0\refint\CalendarApp.dll
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\obj\Debug\net6.0\CalendarApp.pdb
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\obj\Debug\net6.0\CalendarApp.genruntimeconfig.cache
+C:\Users\rober\OneDrive - CARNET\Desktop\OOP-Calendar-App\CalendarApp\CalendarApp\obj\Debug\net6.0\ref\CalendarApp.dll
