@@ -15,7 +15,7 @@ namespace CalendarApp.Classes
         public DateTime endingDate { get; set; }
         public List<string> emailListOfAttendances { get; private set; }
 
-
+       
         public Event(string aName, string aLocation, DateTime aStartingDate, DateTime aEndingDate)
         { 
             id = Guid.NewGuid();
@@ -23,6 +23,14 @@ namespace CalendarApp.Classes
             location = aLocation;
             startingDate = aStartingDate;
             endingDate = aEndingDate;
+            emailListOfAttendances = new List<string>();
+        }
+
+        public void addListOfEmailsToAnEvent(List<string> listOfEmails)
+        {
+            foreach(var item in listOfEmails)
+            emailListOfAttendances.Add(item);
+
         }
 
 
