@@ -21,6 +21,12 @@ namespace CalendarApp.Classes
             events = new Dictionary<Guid, bool>();
         }
 
+        public void eraseGivenEventFromPerson(Guid eventId)
+        {
+            events.Remove(eventId);
+
+        }
+
         public void initialiseEvents(List<Event> events)
         {
             foreach (var item in events) {
