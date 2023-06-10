@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics.SymbolStore;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Principal;
+using System.Threading.Channels;
 
 namespace MyApp // Note: actual namespace depends on the project name.
 {
@@ -302,6 +303,8 @@ namespace MyApp // Note: actual namespace depends on the project name.
             }
         }
 
+   
+
 
         static bool isEventInFuture(Event anEvent)
         {
@@ -315,25 +318,85 @@ namespace MyApp // Note: actual namespace depends on the project name.
         {
             printIdNameAndLocationOfEvent(item);
             TimeSpan difference = item.startingDate.Subtract(DateTime.Now);
-            TimeSpan duration = item.endingDate.Subtract(item.startingDate);
             Console.WriteLine($"Pocinje za - {Math.Round(difference.TotalDays, 1)} dana");
-            Console.WriteLine($"Traje - {Math.Round(duration.TotalDays, 1)} dana");
-            printListOfAttendances(item);
+            Console.WriteLine($"Traje - {returnDurationOfAnEvent(item)} dana");
+
         }
 
-        delegate void MyDelegateFunction(Event item);
+        delegate void MyPrintFunction (Event item);
+        delegate bool MyActivityFunction (Event item);
 
-        static void printEventsOfGivenFunction(MyDelegateFunction function, List<Event> events)
+        static void printEventsOfGivenFunction(MyPrintFunction printFunction, MyActivityFunction checkActivityFunction, List<Event> events)
         {
             Console.Clear();
             foreach (var item in events)
             {
-                if (isEventActive(item) == true)
+                if (checkActivityFunction(item) == true)
                 {
-                    function(item);
+                    printFunction(item);
                 }
             }
 
+        }
+
+       
+
+        static void PastEventsPrint(MyPrintFunction printFunction, MyActivityFunction checkActivityFunction, List<Event> events, List<Person> people)
+        {
+            Console.Clear();
+            foreach (var item in events)
+            {
+                if (checkActivityFunction(item) == true)
+                {
+                    printFunction(item);
+
+                    printPeopleWhoDidOrDidntAttend(people,item.emailListOfAttendances, item.id, true);
+                    printPeopleWhoDidOrDidntAttend(people,item.emailListOfAttendances, item.id, false);
+
+                }
+            }
+            Console.Write("Bilo koji znak za povratak: ");
+            Console.ReadLine();
+        }
+
+        static void printPeopleWhoDidOrDidntAttend(List<Person> people,List<string> attendances, Guid eventId, bool didAttend)
+        {
+            if (didAttend == true) 
+                Console.WriteLine("\n----Prisutni su bili----");
+            else
+                Console.WriteLine("----Nisu bili prisutni----");
+
+            foreach (Person person in people)
+            {
+                if (person.events[eventId] == didAttend && attendances.Contains(person.email))
+                    Console.WriteLine($"{person.name} {person.surname}");
+            }
+            Console.WriteLine();
+        }
+
+
+        static double returnDurationOfAnEvent(Event anEvent)
+        {
+            TimeSpan duration = anEvent.endingDate.Subtract(anEvent.startingDate);
+            return Math.Round(duration.TotalDays, 1);
+        }
+
+        static bool isEventInPast(Event e)
+        {
+            if (e.endingDate < DateTime.Now)
+                return true;
+            else
+                return false;
+
+        }
+
+        
+
+        static void printPastEvent(Event item)
+        {
+            printIdNameAndLocationOfEvent(item);
+            TimeSpan difference = DateTime.Now.Subtract(item.endingDate);
+            Console.WriteLine($"Završio je prije - {Math.Round(difference.TotalDays, 1)} dana \nTrajao je - {returnDurationOfAnEvent(item)} - dana");  
         }
 
 
@@ -351,26 +414,29 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
                 switchNumber = staringScreen();
 
-            switch (switchNumber)
-            {
-                case 1:
-                       printEventsOfGivenFunction(printActiveEvent, events);
-
-                       activeEventsSubmenuWithSwitch(events, people);
-
-                    break;
-
-
-
-                case 2:
-                        printEventsOfGivenFunction(printFutureEvent, events);
-
-                        futureEventsSubmenuWithSwitch(events, people);
+                switch (switchNumber)
+                {
+                    case 1:
+                        printEventsOfGivenFunction(printActiveEvent, isEventActive, events);
+                        activeEventsSubmenuWithSwitch(events, people);
 
                         break;
 
 
-            }
+
+                    case 2:
+                        printEventsOfGivenFunction(printFutureEvent, isEventInFuture, events);
+                        futureEventsSubmenuWithSwitch(events, people);
+
+                        break;
+
+                    case 3:
+                        PastEventsPrint(printPastEvent, isEventInPast, events, people);
+
+
+
+                        break;
+                }
 
                 if (switchNumber == 5)
                     return;
