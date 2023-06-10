@@ -42,6 +42,11 @@ namespace CalendarApp.Classes
                 events[item.id] = true;
             }
         }
+
+        public void addEventToPerson(Guid id)
+        {
+            events.Add(id, false);
+        }
         
     }
 }

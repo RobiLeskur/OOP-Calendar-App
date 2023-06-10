@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics.SymbolStore;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading.Channels;
 
@@ -183,18 +184,18 @@ namespace MyApp // Note: actual namespace depends on the project name.
                 return false;
         }
 
-        static bool checkIfPersonsEmailExists(List<string> people, string email)
+        static bool checkIfPersonsEmailExists(List<string> people, string email, string message)
         {
 
             if (people.Contains(email)) return true;
             else {
-                Console.WriteLine("Osoba nije prisutna eventu");
+                Console.Write(message);
                 return false;
             }
 
         }
 
-        static List<string> inputListOfPeople(List<string> people, string str)
+        static List<string> inputListOfPeople(List<string> people, string str, string message)
         {
             List<string> listOfPeople = new List<string>();
             Console.Write(str);
@@ -202,7 +203,11 @@ namespace MyApp // Note: actual namespace depends on the project name.
             do
             {
                 email = Console.ReadLine();
-                if (checkIfPersonsEmailExists(people, email) == true) {
+
+                if (email == "0")
+                    break;
+
+                if (checkIfPersonsEmailExists(people, email, message)) {
                     listOfPeople.Add(email);
                     Console.WriteLine("Osoba zabilježena!");
 
@@ -241,14 +246,14 @@ namespace MyApp // Note: actual namespace depends on the project name.
         {
             Guid givenEventId = inputGuidWithParse();
             int index = indexOfPersonByEventId(events, givenEventId);
-            List<string> listOfPeopleToRemove = inputListOfPeople(events[index].emailListOfAttendances, "Unesi popis suodionika koji nisu bili prisutni, unesi 0 za izlaz: ");
+            List<string> listOfPeopleToRemove = inputListOfPeople(events[index].emailListOfAttendances, "Unesi popis suodionika koji nisu bili prisutni, unesi 0 za izlaz: ", "Osoba nije prisutna na eventu");
             settingPersonsAttendanceToFalse(listOfPeopleToRemove, givenEventId, people, events);
         }
         static void removingPeopleFromEventFinal(List<Event> events, List<Person> people)
         {
             Guid givenEventId = inputGuidWithParse();
             int index = indexOfPersonByEventId(events, givenEventId);
-            List<string> listOfPeopleToRemove = inputListOfPeople(events[index].emailListOfAttendances, "Unesi popis suodionika koje zelis uklonuti sa eveta, unesi 0 za izlaz: ");
+            List<string> listOfPeopleToRemove = inputListOfPeople(events[index].emailListOfAttendances, "Unesi popis suodionika koje zelis uklonuti sa eveta, unesi 0 za izlaz: ", "Osoba nije prisutna na eventu");
             removingPeopeFromEvent(listOfPeopleToRemove, givenEventId, people, events);
         }
 
@@ -399,6 +404,97 @@ namespace MyApp // Note: actual namespace depends on the project name.
             Console.WriteLine($"Završio je prije - {Math.Round(difference.TotalDays, 1)} dana \nTrajao je - {returnDurationOfAnEvent(item)} - dana");  
         }
 
+        static DateTime dateTimeInputWithParse()
+        {
+            string input = Console.ReadLine();
+
+            DateTime date;
+           
+            while(DateTime.TryParse(input, out date) != true){
+                if(DateTime.TryParse(input, out date) == false) {
+                    Console.WriteLine("Unesi ispravan datum!");
+                input = Console.ReadLine();
+                }
+            }
+
+            return date;
+
+        }
+
+        static void createEvent(List<Event> events, List<Person> people)
+        {
+            Console.Clear();
+            Console.Write("Unesi Naziv Eventa: ");
+            string nameOfEvent = Console.ReadLine();
+            Console.Write("Unesi Lokaciju Eventa: ");
+            string locationOfEvent = Console.ReadLine();
+            DateTime startingDate;
+            DateTime endingDate;
+
+            do
+            {
+                Console.WriteLine("Unesi datum pocetka (yyyy-mm-dd): ");
+                startingDate = dateTimeInputWithParse();
+                Console.WriteLine("Unesi datum kraja (yyyy-mm-dd): ");
+                endingDate = dateTimeInputWithParse();
+
+                if(startingDate > endingDate)
+                    Console.WriteLine("Datum kraja ne moze biti prije pocetka!\n");
+
+            } while(startingDate > endingDate);
+
+            List<string> listOfAllEmails = new List<string>();
+            Console.WriteLine("-------------------------------\nLista ljudi koje mozes dodati na event");
+            foreach (Person person in people) {
+                listOfAllEmails.Add(person.email);
+                Console.WriteLine(person.email);
+            }
+
+            inputListOfPeople(listOfAllEmails, "-------------------------------\nUnesi ljude koje zelis na eventu(0 - povratak): ", "Ne postoji osoba s unesenim e-mailom, unesi ponovo: ");
+            List<string> listOfEmails = checkIfPersonIsAttendingAnotherEventAtTheSameTime(people, events, listOfAllEmails, startingDate, endingDate);
+            
+            if(listOfEmails.Count == 0) { 
+                Console.WriteLine("Nitko ne dolazi na event pa je otkazan");
+                return;
+            }
+            else
+            {
+                events.Add(new Event(nameOfEvent, locationOfEvent, startingDate, endingDate));
+                events.Last().addListOfEmailsToAnEvent(listOfEmails);
+
+                foreach(var email in listOfEmails)
+                {
+                    int index = people.FindIndex(obj => obj.email == email);
+                    people[index].addEventToPerson(events.Last().id);
+                }
+
+            }
+            Console.ReadLine();
+        }
+
+        static List<string> checkIfPersonIsAttendingAnotherEventAtTheSameTime(List<Person> people, List<Event> events,List<string> listOfEmails, DateTime newStartingDate, DateTime newEndingDate)
+        {
+            List<string> finalList = new List<string>();
+
+            Console.WriteLine("---------------------------");
+
+            foreach (var email in listOfEmails) { 
+                int index = people.FindIndex(obj => obj.email == email);
+                    foreach(var anEvent in events)
+                {
+                    if (anEvent.emailListOfAttendances.Contains(email) == true || newStartingDate > anEvent.startingDate || newEndingDate < anEvent.endingDate) {
+                        finalList.Add(email);
+                    }
+                    else
+                        Console.WriteLine($"Sudionik sa: {email} ne moze pristupiti jer ide na neki drugi event!");
+
+                }
+
+            }
+            Console.WriteLine("---------------------------");
+            return finalList;
+        }
+
 
 
         static void Main()
@@ -432,10 +528,11 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
                     case 3:
                         PastEventsPrint(printPastEvent, isEventInPast, events, people);
-
-
-
                         break;
+
+                    case 4:
+                        createEvent(events, people);
+                        break;                
                 }
 
                 if (switchNumber == 5)
