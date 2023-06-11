@@ -1,6 +1,7 @@
 ﻿using CalendarApp.Classes;
 using System;
 using System.Diagnostics.SymbolStore;
+using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
@@ -373,7 +374,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
             foreach (Person person in people)
             {
-                if (person.events[eventId] == didAttend && attendances.Contains(person.email))
+                if (person.events[eventId] == didAttend)
                     Console.WriteLine($"{person.name} {person.surname}");
             }
             Console.WriteLine();
@@ -450,8 +451,8 @@ namespace MyApp // Note: actual namespace depends on the project name.
                 Console.WriteLine(person.email);
             }
 
-            inputListOfPeople(listOfAllEmails, "-------------------------------\nUnesi ljude koje zelis na eventu(0 - povratak): ", "Ne postoji osoba s unesenim e-mailom, unesi ponovo: ");
-            List<string> listOfEmails = checkIfPersonIsAttendingAnotherEventAtTheSameTime(people, events, listOfAllEmails, startingDate, endingDate);
+            List<string> listOfEmails = inputListOfPeople(listOfAllEmails, "-------------------------------\nUnesi ljude koje zelis na eventu(0 - povratak): ", "Ne postoji osoba s unesenim e-mailom, unesi ponovo: ");
+            //List<string> newListOfEmails = checkIfPersonIsAttendingAnotherEventAtTheSameTime(people, events, listOfAllEmails, startingDate, endingDate);
             
             if(listOfEmails.Count == 0) { 
                 Console.WriteLine("Nitko ne dolazi na event pa je otkazan");
@@ -459,14 +460,31 @@ namespace MyApp // Note: actual namespace depends on the project name.
             }
             else
             {
-                events.Add(new Event(nameOfEvent, locationOfEvent, startingDate, endingDate));
-                events.Last().addListOfEmailsToAnEvent(listOfEmails);
 
-                foreach(var email in listOfEmails)
-                {
-                    int index = people.FindIndex(obj => obj.email == email);
-                    people[index].addEventToPerson(events.Last().id);
+                Event newEvent = new Event(nameOfEvent, locationOfEvent, startingDate, endingDate);
+                events.Add(newEvent);
+                newEvent.addListOfEmailsToAnEvent(listOfEmails);
+
+                foreach(var item in listOfEmails)
+                    Console.WriteLine(item);
+                Console.ReadLine();
+
+                foreach (var email in listOfEmails)
+                  {
+                      int index = people.FindIndex(obj => obj.email == email);
+                      people[index].addEventToPerson(newEvent.id, true);
                 }
+               
+                foreach(var email in listOfAllEmails)
+                {
+                    if (!listOfEmails.Contains(email)) { 
+                        int index = people.FindIndex(obj => obj.email == email);
+                    people[index].addEventToPerson(newEvent.id, false);
+                    }
+                }
+             
+
+
 
             }
             Console.ReadLine();

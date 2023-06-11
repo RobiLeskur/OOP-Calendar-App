@@ -43,9 +43,12 @@ namespace CalendarApp.Classes
             }
         }
 
-        public void addEventToPerson(Guid id)
+        public void addEventToPerson(Guid id, bool isTrue)
         {
-            events.Add(id, false);
+            if (!events.ContainsKey(id))
+            {
+                events.Add(id, isTrue);
+            }
         }
         
     }
